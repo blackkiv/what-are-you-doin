@@ -1,0 +1,3 @@
+spring.application.name: wayd-backend
+server:
+  port: 8765

@@ -1,0 +1,9 @@
+[package]
+name = "wayd-tracker"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+active-win-pos-rs = "0.9"
+tokio = { version = "1", features = ["rt-multi-thread", "time", "macros"] }
+chrono = "0.4"

@@ -1,0 +1,4 @@
+CREATE USER wayd WITH PASSWORD 'super_secret_strong_password';
+CREATE DATABASE wayd;
+CREATE SCHEMA app AUTHORIZATION wayd;
+GRANT ALL PRIVILEGES ON DATABASE wayd TO wayd;
