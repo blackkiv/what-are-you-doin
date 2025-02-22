@@ -1,0 +1,13 @@
+###
+POST http://localhost:8765/logs
+User-Token: 7328da82-24c2-41e0-8d7d-a920ce35a6f4
+Content-Type: application/json
+
+{
+  "logs": [
+    {
+      "appName": "test_app",
+      "timestamp": 1740245766
+    }
+  ]
+}

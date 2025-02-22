@@ -1,3 +1,19 @@
 spring.application.name: wayd-backend
 server:
   port: 8765
+spring:
+  r2dbc:
+    username: wayd
+    password: super_secret_strong_password
+    url: r2dbc:postgresql://localhost:5432/wayd?currentSchema=app
+  flyway:
+    user: wayd
+    password: super_secret_strong_password
+    url: jdbc:postgresql://localhost:5432/wayd
+    locations: classpath:db/postgres/migration
+    default-schema: app
+    placeholders:
+      schema: app
+  jpa:
+    hibernate:
+      ddl-auto: validate

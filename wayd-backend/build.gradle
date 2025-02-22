@@ -26,6 +26,9 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    implementation 'io.github.joselion:spring-r2dbc-relationships:1.1.0'
+    implementation 'commons-codec:commons-codec:1.18.0'
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'org.postgresql:r2dbc-postgresql'
