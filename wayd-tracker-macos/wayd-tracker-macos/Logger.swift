@@ -6,40 +6,35 @@
 import Foundation
 
 class Logger {
-    private var requester: Requester
-    private var logs: [TrackLog] = []
+    private var logs: Set<TrackLog> = []
     private let queue = DispatchQueue(label: "logsList", attributes: .concurrent)
-    
-    init() {
-        self.requester = Requester(url: URL(string: "aboba")!)
-    }
     
     func recordLog() {
         if let log = WindowFetcher.getLog() {
-            queue.async(flags: .barrier) { [weak self] in
-                self?.logs.append(log)
-                print("Log: \(log)")
+            queue.sync{
+                self.logs.insert(log)
+                ConsoleLogging.shared.printLog("Log: \(log)")
             }
         } else {
-            print("Error during app tracking")
+            ConsoleLogging.shared.printLog("Error during app tracking")
         }
     }
     
     func syncLogs() {
         queue.sync {
-            let tempLogsCopy = self.logs
+            let tempLogsCopy = Array(self.logs)
             syncLogsToServer(logs: tempLogsCopy)
         }
     }
     
     private func syncLogsToServer(logs: [TrackLog]) {
-        requester.sendLogs(logs) { result in
+        Requester.sendLogs(logs) { result in
             switch result {
             case .success(_):
-                print("Logs synced")
+                ConsoleLogging.shared.printLog("Logs synced")
                 self.logs.removeAll()
             case .failure(let error):
-                print("Error occurred: \(error)")
+                ConsoleLogging.shared.printLog("Error occurred: \(error)")
             }
         }
     }
