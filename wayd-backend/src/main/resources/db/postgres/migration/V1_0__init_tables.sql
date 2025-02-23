@@ -13,7 +13,7 @@ create table if not exists ${schema}.track_log
     id        uuid primary key unique default uuid_generate_v4(),
     user_id   uuid    not null,
     app_name  varchar not null,
-    timestamp bigint not null,
+    timestamp bigint  not null,
 
     unique (user_id, app_name, timestamp)
 );
