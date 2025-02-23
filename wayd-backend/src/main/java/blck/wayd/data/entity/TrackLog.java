@@ -26,7 +26,7 @@ public class TrackLog {
     private String appName;
 
     @NonNull
-    private Integer timestamp;
+    private Long timestamp;
 
     @NonNull
     private UUID userId;

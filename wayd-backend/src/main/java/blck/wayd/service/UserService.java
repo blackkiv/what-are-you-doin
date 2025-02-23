@@ -12,6 +12,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * User Service.
@@ -67,5 +68,12 @@ public class UserService {
                         return Mono.error(new UserNotExists(token));
                     }
                 });
+    }
+
+    public <T> Flux<T> validateUserExistsByTokenAndPropagateUserId(UUID token, Function<UUID, Flux<T>> publisherFunction) {
+        return repository.findByToken(token)
+                .flux()
+                .flatMap(user -> publisherFunction.apply(user.getId()))
+                .switchIfEmpty(Flux.error(new UserNotExists(token)));
     }
 }

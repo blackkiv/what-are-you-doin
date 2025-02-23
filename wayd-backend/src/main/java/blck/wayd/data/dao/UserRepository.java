@@ -13,6 +13,8 @@ public interface UserRepository extends ReactiveCrudRepository<User, UUID> {
 
     Mono<User> findByUsernameAndPassword(String username, String password);
 
+    Mono<User> findByToken(UUID token);
+
     Mono<Boolean> existsByUsername(String username);
 
     Mono<Boolean> existsByToken(UUID token);

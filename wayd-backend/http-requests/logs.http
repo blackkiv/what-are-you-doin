@@ -11,3 +11,7 @@ Content-Type: application/json
     }
   ]
 }
+
+###
+GET http://localhost:8765/logs/stats
+User-Token: c26ab5f1-4911-4702-be8a-25e78d7620dd
