@@ -17,3 +17,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: validate
+
+cors:
+  allowedOrigins:
+    - "http://localhost:5173"
