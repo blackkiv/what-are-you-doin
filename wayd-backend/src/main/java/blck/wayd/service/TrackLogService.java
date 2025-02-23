@@ -26,12 +26,12 @@ public class TrackLogService {
 
     @Transactional
     public Mono<Void> saveLogs(UUID token, Collection<TrackLogDto> logsDtos) {
-        var logs = logsDtos.stream()
-                .map(dto -> TrackLog.fromDto(dto, token))
-                .toList();
-        Mono<Void> saveProducer = repository.saveAll(logs)
-                .then(Mono.empty());
-        return userService.validateUserExistsByToken(token, saveProducer);
+        return userService.validateUserExistsByTokenAndPropagateUserId(token, (userId) -> {
+            var logs = logsDtos.stream()
+                    .map(dto -> TrackLog.fromDto(dto, userId))
+                    .toList();
+            return repository.saveAll(logs);
+        }).then(Mono.empty());
     }
 
     @Transactional(readOnly = true)
