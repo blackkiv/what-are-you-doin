@@ -1,37 +1,39 @@
 package blck.wayd.data.entity;
 
 import blck.wayd.model.dto.TrackLogDto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
-/**
- * Track Log.
- */
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@RequiredArgsConstructor
+@Entity
+@Getter
+@Setter
 public class TrackLog {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @NonNull
     private String appName;
-
-    @NonNull
     private Long timestamp;
 
-    @NonNull
-    private UUID userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public static TrackLog fromDto(TrackLogDto dto, UUID userId) {
-        return new TrackLog(dto.appName(), dto.timestamp(), userId);
+        var log = new TrackLog();
+        log.setAppName(dto.appName());
+        log.setTimestamp(dto.timestamp());
+        var user = new User();
+        user.setId(userId);
+        log.setUser(user);
+        return log;
     }
 }

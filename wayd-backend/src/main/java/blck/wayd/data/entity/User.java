@@ -1,39 +1,36 @@
 package blck.wayd.data.entity;
 
-import io.github.joselion.springr2dbcrelationships.annotations.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.UUID;
 
-/**
- * User.
- */
-@Data
-@Table(name = "app_user")
+@Entity(name = "app_user")
+@Getter
+@Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@RequiredArgsConstructor
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
-
-    @NonNull
     private String username;
-
-    @NonNull
     private String password;
-
-    @NonNull
     private UUID token;
 
-    @OneToMany(mappedBy = "user_id")
+    @OneToMany(mappedBy = "user")
     private List<TrackLog> trackLogs;
+
+    public User(String username, String password, UUID token) {
+        this.username = username;
+        this.password = password;
+        this.token = token;
+    }
 }

@@ -1,11 +1,14 @@
 spring.application.name: wayd-backend
 server:
   port: 8765
+  servlet:
+    context-path: /api
 spring:
-  r2dbc:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/wayd?currentSchema=app
     username: wayd
     password: super_secret_strong_password
-    url: r2dbc:postgresql://localhost:5432/wayd?currentSchema=app
   flyway:
     user: wayd
     password: super_secret_strong_password
@@ -15,6 +18,10 @@ spring:
     placeholders:
       schema: app
   jpa:
+    properties:
+      hibernate:
+        default_schema: app
+        dialect: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
 

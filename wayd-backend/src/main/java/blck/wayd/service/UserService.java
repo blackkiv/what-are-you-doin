@@ -9,9 +9,8 @@ import blck.wayd.model.dto.UserDto;
 import blck.wayd.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 
@@ -24,58 +23,38 @@ public class UserService {
 
     private final UserRepository repository;
 
-    public Mono<UUID> getUserTokenByCredentials(String username, String password) {
+    public UUID getUserTokenByCredentials(String username, String password) {
         return repository.findByUsernameAndPassword(username, PasswordUtil.hashPassword(password))
-                .switchIfEmpty(Mono.error(new UserNotExists(username)))
-                .map(User::getToken);
+                .orElseThrow(() -> new UserNotExists(username))
+                .getToken();
     }
 
-    public Mono<UUID> createUser(UserDto createUserDto, String rawPassword) {
+    public UUID createUser(UserDto createUserDto, String rawPassword) {
         var username = createUserDto.getUsername();
-        return repository.existsByUsername(username)
-                .flatMap(exists -> {
-                    if (exists) {
-                        return Mono.error(new UserAlreadyExists(username));
-                    } else {
-                        var user = new User(
-                                username,
-                                PasswordUtil.hashPassword(rawPassword),
-                                UUID.randomUUID()
-                        );
-                        return repository.save(user)
-                                .map(User::getToken);
-                    }
-                });
+        var userExists = repository.existsByUsername(username);
+        if (userExists) {
+            throw new UserAlreadyExists(username);
+        } else {
+            var user = new User(
+                    username,
+                    PasswordUtil.hashPassword(rawPassword),
+                    UUID.randomUUID()
+            );
+            var savedUser = repository.save(user);
+            return savedUser.getToken();
+        }
     }
 
-    public <T> Flux<T> validateUserExistsByToken(UUID token, Flux<T> publisher) {
-        return repository.existsByToken(token)
-                .flux()
-                .flatMap(exists -> {
-                    if (exists) {
-                        return publisher;
-                    } else {
-                        return Flux.error(new UserNotExists(token));
-                    }
-                });
-    }
+    public <T> List<T> validateUserExistsByTokenAndPropagateUserId(
+            UUID token,
+            Function<UUID, List<T>> publisherFunction) {
 
-    public <T> Mono<T> validateUserExistsByToken(UUID token, Mono<T> publisher) {
-        return repository.existsByToken(token)
-                .flatMap(exists -> {
-                    if (exists) {
-                        return publisher;
-                    } else {
-                        return Mono.error(new UserNotExists(token));
-                    }
-                });
-    }
-
-    public <T> Flux<T> validateUserExistsByTokenAndPropagateUserId(UUID token, Function<UUID, Flux<T>> publisherFunction) {
-        return repository.findByToken(token)
-                .flux()
-                .switchIfEmpty(Flux.error(new UserNotExists(token)))
-                .flatMap(user -> publisherFunction.apply(user.getId()))
-                .switchIfEmpty(Flux.error(new NoData()));
+        var user = repository.findByToken(token)
+                .orElseThrow(() -> new UserNotExists(token));
+        var result = publisherFunction.apply(user.getId());
+        if (result.isEmpty()) {
+            throw new NoData();
+        }
+        return result;
     }
 }

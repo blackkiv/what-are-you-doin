@@ -13,7 +13,7 @@ services:
       POSTGRES_USER: postgres
 
   prod_db:
-    container_name: prod_db
+    container_name: wayd.prod_db
     image: postgres:17
     restart: unless-stopped
     volumes:
@@ -26,7 +26,7 @@ services:
       - wayd-net
 
   backend:
-    container_name: backend
+    container_name: wayd.backend
     restart: unless-stopped
     build:
       context: ../
@@ -34,15 +34,14 @@ services:
     depends_on:
       - prod_db
     environment:
-      SPRING_R2DBC_URL: "r2dbc:postgresql://172.19.0.2:5432/wayd?currentSchema=app"
-      SPRING_FLYWAY_URL: "jdbc:postgresql://prod_db:5432/wayd"
-      SPRING_WEBFLUX_BASE_PATH: "/api"
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://wayd.prod_db:5432/wayd?currentSchema=app"
+      SPRING_FLYWAY_URL: "jdbc:postgresql://wayd.prod_db:5432/wayd"
       CORS_ALLOWED_ORIGINS: "http://localhost"
     networks:
       - wayd-net
 
   frontend:
-    container_name: frontend
+    container_name: wayd.frontend
     restart: unless-stopped
     build:
       context: ../
@@ -53,7 +52,7 @@ services:
       - backend
     environment:
       VITE_BACKEND_URL: "http://localhost:80/api"
-      BACKEND_URL: "http://backend:8765"
+      BACKEND_URL: "http://wayd.backend:8765"
     networks:
       - nginx-net
       - wayd-net

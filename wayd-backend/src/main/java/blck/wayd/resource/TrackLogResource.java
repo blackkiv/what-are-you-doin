@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,18 +29,20 @@ public class TrackLogResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<Void> syncLogs(@RequestHeader("User-Token") UUID token,
-                               @RequestBody TrackLogsRequest request) {
+    public void syncLogs(@RequestHeader("User-Token") UUID token,
+                         @RequestBody TrackLogsRequest request) {
 
         var logsDtos = request.logs().stream()
                 .map(TrackLogRequest::toDto)
                 .toList();
-        return trackLogService.saveLogs(token, logsDtos);
+        trackLogService.saveLogs(token, logsDtos);
     }
 
     @GetMapping("/stats")
-    public Flux<AppElapsedTimeResponse> getAppStats(@RequestHeader("User-Token") UUID token) {
+    public List<AppElapsedTimeResponse> getAppStats(@RequestHeader("User-Token") UUID token) {
         return trackLogService.getAppElapsedTime(token)
-                .map(AppElapsedTimeResponse::fromDto);
+                .stream()
+                .map(AppElapsedTimeResponse::fromDto)
+                .toList();
     }
 }
