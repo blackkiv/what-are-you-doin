@@ -18,6 +18,8 @@ spring:
     hibernate:
       ddl-auto: validate
 
+logging.level.org.springframework.web: DEBUG
+
 cors:
   allowedOrigins:
     - "http://localhost:5173"

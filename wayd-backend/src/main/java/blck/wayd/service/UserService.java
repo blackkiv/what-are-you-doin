@@ -2,6 +2,7 @@ package blck.wayd.service;
 
 import blck.wayd.data.dao.UserRepository;
 import blck.wayd.data.entity.User;
+import blck.wayd.exceptions.NoData;
 import blck.wayd.exceptions.UserAlreadyExists;
 import blck.wayd.exceptions.UserNotExists;
 import blck.wayd.model.dto.UserDto;
@@ -73,7 +74,8 @@ public class UserService {
     public <T> Flux<T> validateUserExistsByTokenAndPropagateUserId(UUID token, Function<UUID, Flux<T>> publisherFunction) {
         return repository.findByToken(token)
                 .flux()
+                .switchIfEmpty(Flux.error(new UserNotExists(token)))
                 .flatMap(user -> publisherFunction.apply(user.getId()))
-                .switchIfEmpty(Flux.error(new UserNotExists(token)));
+                .switchIfEmpty(Flux.error(new NoData()));
     }
 }

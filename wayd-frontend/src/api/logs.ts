@@ -1,4 +1,5 @@
 import axios from 'axios'
+import {backendUrl} from './backendUtil.ts'
 
 export type AppStatsResponse = {
   appName: string
@@ -7,7 +8,7 @@ export type AppStatsResponse = {
 
 export const appStats = async () => {
   const response = await axios.get<AppStatsResponse>(
-    'http://localhost:8765/logs/stats',
+    `${backendUrl()}/logs/stats`,
     {
       headers: {
         'User-Token': localStorage.getItem('Wayd-Token'),
