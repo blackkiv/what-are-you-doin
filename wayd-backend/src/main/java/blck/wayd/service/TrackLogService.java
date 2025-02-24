@@ -2,14 +2,18 @@ package blck.wayd.service;
 
 import blck.wayd.data.dao.TrackLogRepository;
 import blck.wayd.data.entity.TrackLog;
+import blck.wayd.exceptions.NoData;
+import blck.wayd.model.dto.AppElapsedTimeDto;
+import blck.wayd.model.dto.ConsecutiveAppUsageDto;
 import blck.wayd.model.dto.TrackLogDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Track Log Service.
@@ -22,12 +26,44 @@ public class TrackLogService {
     private final TrackLogRepository repository;
 
     @Transactional
-    public Mono<Void> saveLogs(UUID userId, Collection<TrackLogDto> logsDtos) {
+    public void saveLogs(UUID token, Collection<TrackLogDto> logsDtos) {
+        var userId = userService.getUserIdByToken(token);
         var logs = logsDtos.stream()
                 .map(dto -> TrackLog.fromDto(dto, userId))
                 .toList();
-        Mono<Void> saveProducer = repository.saveAll(logs)
-                .then(Mono.empty());
-        return userService.validateUserExistsByToken(userId, saveProducer);
+        repository.saveAll(logs);
+    }
+
+    @Transactional(readOnly = true)
+    public List<AppElapsedTimeDto> getAppElapsedTime(UUID token) {
+        var userId = userService.getUserIdByToken(token);
+        var elapsedTime = calculateAppsElapsedTime(userId);
+        if (elapsedTime.isEmpty()) {
+            throw new NoData();
+        }
+        return elapsedTime;
+    }
+
+    private List<AppElapsedTimeDto> calculateAppsElapsedTime(UUID userId) {
+        var appUsage = repository.findConsecutiveAppUsageByUserId(userId);
+        System.out.println(appUsage);
+        return appUsage.stream()
+                .map(this::calculateAppElapsedTime)
+                .collect(Collectors.groupingBy(AppElapsedTimeDto::appName))
+                .entrySet()
+                .stream()
+                .map(appGroup -> {
+                    var elapsedTime = appGroup.getValue().stream().map(AppElapsedTimeDto::elapsedTime)
+                            .reduce(0L, Long::sum);
+                    return new AppElapsedTimeDto(appGroup.getKey(), elapsedTime);
+                })
+                .toList();
+    }
+
+    private AppElapsedTimeDto calculateAppElapsedTime(ConsecutiveAppUsageDto appUsage) {
+        return new AppElapsedTimeDto(
+                appUsage.appName(),
+                appUsage.lastUsageTimestamp() - appUsage.firstUsageTimestamp()
+        );
     }
 }

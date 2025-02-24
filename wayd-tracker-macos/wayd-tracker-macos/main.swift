@@ -15,6 +15,7 @@ func syncLogs() {
     logger.syncLogs()
 }
 
+// TODO: look on possibility to subscribe to change of active window event
 Timer.scheduledTimer(withTimeInterval: 5, repeats: true) { _ in
     fetchAppData()
 }

@@ -1,36 +1,37 @@
 plugins {
-    id 'java'
-    id 'org.springframework.boot' version '3.4.3'
-    id 'io.spring.dependency-management' version '1.1.7'
+	id 'java'
+	id 'org.springframework.boot' version '3.4.3'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'org.hibernate.orm' version '6.6.8.Final'
+	id 'org.graalvm.buildtools.native' version '0.10.5'
 }
 
 group = 'blck'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
 }
 
 configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
-    implementation 'org.springframework.boot:spring-boot-starter-webflux'
-    implementation 'org.flywaydb:flyway-database-postgresql'
-    implementation 'io.github.joselion:spring-r2dbc-relationships:1.1.0'
-    implementation 'commons-codec:commons-codec:1.18.0'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
-    runtimeOnly 'org.postgresql:r2dbc-postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+	implementation 'commons-codec:commons-codec:1.18.0'
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
 }

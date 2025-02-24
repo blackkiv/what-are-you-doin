@@ -6,7 +6,7 @@
 import AppKit
 import ApplicationServices
 
-public struct TrackLog: Codable {
+public struct TrackLog: Hashable, Codable {
     var appName: String
     var timestamp: Int
 }

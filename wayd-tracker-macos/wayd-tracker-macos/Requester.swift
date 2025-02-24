@@ -5,22 +5,22 @@
 
 import Foundation
 
+struct LogWrapper: Codable {
+    var logs: [TrackLog]
+}
+
 class Requester {
-    var url: URL
     
-    init(url: URL) {
-        self.url = url
-    }
-    
-    func sendLogs(_ logs: [TrackLog],completion: @escaping (Result<(), Error>) -> Void) {
-        var request = URLRequest(url: url)
+    static func sendLogs(_ logs: [TrackLog],completion: @escaping (Result<(), Error>) -> Void) {
+        let config = Config.shared.loadConfig()!
+        var request = URLRequest(url: URL(string: config.url)!)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("", forHTTPHeaderField: "User-Id")
+        request.setValue(config.token, forHTTPHeaderField: "User-Token")
         
         do {
             let encoder = JSONEncoder()
-            let data = try encoder.encode(logs)
+            let data = try encoder.encode(LogWrapper(logs: logs))
             request.httpBody = data
         } catch {
             completion(.failure(error))
@@ -42,6 +42,8 @@ class Requester {
                 completion(.failure(error))
                 return
             }
+            
+            completion(.success(()))
         }
         
         task.resume()

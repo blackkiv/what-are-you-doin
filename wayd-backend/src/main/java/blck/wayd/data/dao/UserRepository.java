@@ -1,19 +1,21 @@
 package blck.wayd.data.dao;
 
 import blck.wayd.data.entity.User;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import reactor.core.publisher.Mono;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
  * User Repository.
  */
-public interface UserRepository extends ReactiveCrudRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
-    Mono<User> findByUsernameAndPassword(String username, String password);
+    Optional<User> findByUsernameAndPassword(String username, String password);
 
-    Mono<Boolean> existsByUsername(String username);
+    Optional<User> findByToken(UUID token);
 
-    Mono<Boolean> existsByToken(UUID token);
+    Boolean existsByUsername(String username);
+
+    Boolean existsByToken(UUID token);
 }

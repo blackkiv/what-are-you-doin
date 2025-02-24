@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import reactor.core.publisher.Mono;
 
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class UserResource {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<UUID> registerUser(@RequestBody CreateUserRequest request) {
+    public UUID registerUser(@RequestBody CreateUserRequest request) {
         return userService.createUser(new UserDto(request.username()), request.rawPassword());
     }
 }
