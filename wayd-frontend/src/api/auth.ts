@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {backendUrl} from './backendUtil'
+import { backendUrl } from './backendUtil'
 
 export type LoginPayload = {
   username: string

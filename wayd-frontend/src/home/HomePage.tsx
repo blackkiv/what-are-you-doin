@@ -1,10 +1,10 @@
-import {useQuery} from '@tanstack/react-query'
-import {appStats} from '../api/logs'
-import {PieChart} from '@mui/x-charts'
-import {useEffect} from 'react'
-import {AxiosError} from 'axios'
-import {useNavigate} from 'react-router-dom'
-import {Typography} from '@mui/material'
+import { useQuery } from '@tanstack/react-query'
+import { appStats } from '../api/logs'
+import { PieChart } from '@mui/x-charts'
+import { useEffect } from 'react'
+import { AxiosError } from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { Typography } from '@mui/material'
 
 const formatSeconds = (seconds: number) => {
   const hours = Math.floor(seconds / 3600)
@@ -27,7 +27,7 @@ const formatSeconds = (seconds: number) => {
 const HomePage = () => {
   const navigate = useNavigate()
 
-  const $stats = useQuery({queryKey: ['appStats'], queryFn: appStats})
+  const $stats = useQuery({ queryKey: ['appStats'], queryFn: appStats })
 
   useEffect(() => {
     if ($stats.error instanceof AxiosError) {
@@ -52,8 +52,8 @@ const HomePage = () => {
                 value: appUsage.elapsedTime,
                 label: appUsage.appName,
               })) ?? [],
-            highlightScope: {fade: 'global', highlight: 'item'},
-            faded: {innerRadius: 30, additionalRadius: -30, color: 'gray'},
+            highlightScope: { fade: 'global', highlight: 'item' },
+            faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
             valueFormatter: (item: { value: number }) =>
               formatSeconds(item.value),
           },

@@ -2,17 +2,15 @@ package blck.wayd.service;
 
 import blck.wayd.data.dao.UserRepository;
 import blck.wayd.data.entity.User;
-import blck.wayd.exceptions.NoData;
 import blck.wayd.exceptions.UserAlreadyExists;
 import blck.wayd.exceptions.UserNotExists;
 import blck.wayd.model.dto.UserDto;
 import blck.wayd.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.UUID;
-import java.util.function.Function;
 
 /**
  * User Service.
@@ -45,16 +43,10 @@ public class UserService {
         }
     }
 
-    public <T> List<T> validateUserExistsByTokenAndPropagateUserId(
-            UUID token,
-            Function<UUID, List<T>> publisherFunction) {
-
-        var user = repository.findByToken(token)
-                .orElseThrow(() -> new UserNotExists(token));
-        var result = publisherFunction.apply(user.getId());
-        if (result.isEmpty()) {
-            throw new NoData();
-        }
-        return result;
+    @Transactional(readOnly = true)
+    public UUID getUserIdByToken(UUID token) {
+        return repository.findByToken(token)
+                .orElseThrow(() -> new UserNotExists(token))
+                .getToken();
     }
 }

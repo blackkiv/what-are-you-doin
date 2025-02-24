@@ -1,8 +1,8 @@
-import {Button, TextField} from '@mui/material'
-import {useMutation} from '@tanstack/react-query'
-import {Controller, useForm} from 'react-hook-form'
-import {login} from '../api/auth'
-import {useNavigate} from 'react-router-dom'
+import { Button, TextField } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
+import { Controller, useForm } from 'react-hook-form'
+import { login } from '../api/auth'
+import { useNavigate } from 'react-router-dom'
 
 const LoginPage = () => {
   const navigate = useNavigate()
@@ -10,7 +10,7 @@ const LoginPage = () => {
   const {
     control,
     handleSubmit,
-    formState: {errors},
+    formState: { errors },
   } = useForm<{
     username: string
     password: string
@@ -30,14 +30,14 @@ const LoginPage = () => {
   return (
     <form
       onSubmit={handleSubmit(data => {
-        $login.mutate({username: data.username, rawPassword: data.password})
+        $login.mutate({ username: data.username, rawPassword: data.password })
       })}
     >
       <Controller
         name="username"
         control={control}
         defaultValue=""
-        render={({field}) => (
+        render={({ field }) => (
           <TextField
             {...field}
             label="Username"
@@ -51,7 +51,7 @@ const LoginPage = () => {
         name="password"
         control={control}
         defaultValue=""
-        render={({field}) => (
+        render={({ field }) => (
           <TextField
             {...field}
             label="Password"

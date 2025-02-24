@@ -2,6 +2,7 @@ package blck.wayd.service;
 
 import blck.wayd.data.dao.TrackLogRepository;
 import blck.wayd.data.entity.TrackLog;
+import blck.wayd.exceptions.NoData;
 import blck.wayd.model.dto.AppElapsedTimeDto;
 import blck.wayd.model.dto.ConsecutiveAppUsageDto;
 import blck.wayd.model.dto.TrackLogDto;
@@ -13,8 +14,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.Collections.emptyList;
 
 /**
  * Track Log Service.
@@ -28,22 +27,26 @@ public class TrackLogService {
 
     @Transactional
     public void saveLogs(UUID token, Collection<TrackLogDto> logsDtos) {
-        userService.validateUserExistsByTokenAndPropagateUserId(token, (userId) -> {
-            var logs = logsDtos.stream()
-                    .map(dto -> TrackLog.fromDto(dto, userId))
-                    .toList();
-            repository.saveAll(logs);
-            return emptyList();
-        });
+        var userId = userService.getUserIdByToken(token);
+        var logs = logsDtos.stream()
+                .map(dto -> TrackLog.fromDto(dto, userId))
+                .toList();
+        repository.saveAll(logs);
     }
 
     @Transactional(readOnly = true)
     public List<AppElapsedTimeDto> getAppElapsedTime(UUID token) {
-        return userService.validateUserExistsByTokenAndPropagateUserId(token, this::calculateAppsElapsedTime);
+        var userId = userService.getUserIdByToken(token);
+        var elapsedTime = calculateAppsElapsedTime(userId);
+        if (elapsedTime.isEmpty()) {
+            throw new NoData();
+        }
+        return elapsedTime;
     }
 
     private List<AppElapsedTimeDto> calculateAppsElapsedTime(UUID userId) {
         var appUsage = repository.findConsecutiveAppUsageByUserId(userId);
+        System.out.println(appUsage);
         return appUsage.stream()
                 .map(this::calculateAppElapsedTime)
                 .collect(Collectors.groupingBy(AppElapsedTimeDto::appName))
