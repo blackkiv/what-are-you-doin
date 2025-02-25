@@ -1,4 +1,4 @@
-import { Button, TextField } from '@mui/material'
+import { Button, Stack, TextField } from '@mui/material'
 import { useMutation } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { login } from '../api/auth'
@@ -20,7 +20,7 @@ const LoginPage = () => {
     mutationFn: login,
     onSuccess: data => {
       localStorage.setItem('Wayd-Token', data)
-      navigate('/home')
+      navigate('/dashboard')
     },
     onError: error => {
       console.error(error)
@@ -33,37 +33,41 @@ const LoginPage = () => {
         $login.mutate({ username: data.username, rawPassword: data.password })
       })}
     >
-      <Controller
-        name="username"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Username"
-            error={!!errors.username}
-            helperText={errors.username?.message}
-            required
-          />
-        )}
-      />
-      <Controller
-        name="password"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Password"
-            type="password"
-            error={!!errors.password}
-            helperText={errors.password?.message}
-            required
-          />
-        )}
-      />
-      <Button type="submit">Login (at least try)</Button>
-      <Button onClick={() => navigate('/register')}>register me :c</Button>
+      <Stack spacing={1}>
+        <Controller
+          name="username"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              variant="standard"
+              label="Username"
+              error={!!errors.username}
+              helperText={errors.username?.message}
+              required
+            />
+          )}
+        />
+        <Controller
+          name="password"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              variant="standard"
+              label="Password"
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              required
+            />
+          )}
+        />
+        <Button type="submit">Login (at least try)</Button>
+        <Button onClick={() => navigate('/register')}>register me :c</Button>
+      </Stack>
     </form>
   )
 }

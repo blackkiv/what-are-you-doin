@@ -2,8 +2,9 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
 import ProtectedRoute from './routing/ProtectedRoute'
 import LoginPage from './auth/LoginPage'
-import HomePage from './home/HomePage.tsx'
+import DashboardPage from './home/DashboardPage.tsx'
 import RegisterPage from './auth/RegisterPage.tsx'
+import PreferencePage from './home/PreferencePage.tsx'
 
 function App() {
   return (
@@ -12,14 +13,23 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
-          path="/home"
+          path="/dashboard"
           element={
             <ProtectedRoute>
-              <HomePage />
+              <DashboardPage />
             </ProtectedRoute>
           }
         />
-        <Route path="/" element={<Navigate to="/home" />} />
+        <Route
+          path="/preference"
+          element={
+            <ProtectedRoute>
+              <PreferencePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+        <Route path="*" element={<Navigate to="/" replace={true} />} />
       </Routes>
     </BrowserRouter>
   )

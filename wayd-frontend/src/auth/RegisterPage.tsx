@@ -2,7 +2,7 @@ import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useMutation } from '@tanstack/react-query'
 import { register } from '../api/auth'
-import { Button, TextField } from '@mui/material'
+import { Button, Stack, TextField } from '@mui/material'
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -20,7 +20,7 @@ const RegisterPage = () => {
     mutationFn: register,
     onSuccess: data => {
       localStorage.setItem('Wayd-Token', data)
-      navigate('/home')
+      navigate('/dashboard')
     },
     onError: error => {
       console.error(error)
@@ -36,36 +36,40 @@ const RegisterPage = () => {
         })
       })}
     >
-      <Controller
-        name="username"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Username"
-            error={!!errors.username}
-            helperText={errors.username?.message}
-            required
-          />
-        )}
-      />
-      <Controller
-        name="password"
-        control={control}
-        defaultValue=""
-        render={({ field }) => (
-          <TextField
-            {...field}
-            label="Password"
-            type="password"
-            error={!!errors.password}
-            helperText={errors.password?.message}
-            required
-          />
-        )}
-      />
-      <Button type="submit">Register (at least try)</Button>
+      <Stack spacing={1}>
+        <Controller
+          name="username"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              variant="standard"
+              label="Username"
+              error={!!errors.username}
+              helperText={errors.username?.message}
+              required
+            />
+          )}
+        />
+        <Controller
+          name="password"
+          control={control}
+          defaultValue=""
+          render={({ field }) => (
+            <TextField
+              {...field}
+              variant="standard"
+              label="Password"
+              type="password"
+              error={!!errors.password}
+              helperText={errors.password?.message}
+              required
+            />
+          )}
+        />
+        <Button type="submit">Register (at least try)</Button>
+      </Stack>
     </form>
   )
 }

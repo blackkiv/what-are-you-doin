@@ -4,7 +4,9 @@ import blck.wayd.data.entity.TrackLog;
 import blck.wayd.model.dto.ConsecutiveAppUsageDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,14 +25,19 @@ public interface TrackLogRepository extends JpaRepository<TrackLog, UUID> {
                                         row_number() over (order by timestamp) -
                                         row_number() over (partition by app_name order by timestamp) as group_id
                                  from track_log
-                                 where user_id = :userId)
+                                 where user_id = :userId
+                                   and (coalesce(:appsWhitelist) is null or app_name in :appsWhitelist)
+                                   and (coalesce(:appsBlacklist) is null or app_name not in :appsBlacklist))
             select app_name       as app_name,
                    min(timestamp) as first_usage_timestamp,
                    max(timestamp) as last_usage_timestamp
             from ranked_data
             group by app_name, group_id
             having min(timestamp) <> max(timestamp)
-            order by first_usage_timestamp
+            order by first_usage_timestamp;
             """, nativeQuery = true)
-    List<ConsecutiveAppUsageDto> findConsecutiveAppUsageByUserId(UUID userId);
+    List<ConsecutiveAppUsageDto> findConsecutiveAppUsageByUserId(
+            UUID userId,
+            @Param("appsWhitelist") Collection<String> appsWhitelist,
+            @Param("appsBlacklist") Collection<String> appsBlacklist);
 }

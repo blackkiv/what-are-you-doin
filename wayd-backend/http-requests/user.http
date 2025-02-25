@@ -1,8 +1,22 @@
 ###
-POST http://localhost:8765/users
+POST http://localhost:8765/api/users
 Content-Type: application/json
 
 {
   "username": "blck",
   "rawPassword": "random_password"
+}
+
+###
+GET http://localhost:8765/api/users
+User-Token: 3ad5c444-c1ff-41ff-8c3d-e54be32570ca
+
+###
+PUT http://localhost:8765/api/users/preference
+User-Token: 3ad5c444-c1ff-41ff-8c3d-e54be32570ca
+Content-Type: application/json
+
+{
+  "appsBlacklist": [],
+  "appsWhitelist": ["IntelliJ IDEA"]
 }

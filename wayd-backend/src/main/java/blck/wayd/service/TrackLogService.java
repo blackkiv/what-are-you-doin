@@ -36,17 +36,21 @@ public class TrackLogService {
 
     @Transactional(readOnly = true)
     public List<AppElapsedTimeDto> getAppElapsedTime(UUID token) {
-        var userId = userService.getUserIdByToken(token);
-        var elapsedTime = calculateAppsElapsedTime(userId);
+        var user = userService.getUserByToken(token);
+        var preference = user.getPreference();
+        var elapsedTime = calculateAppsElapsedTime(
+                user.getId(), preference.getAppsWhitelist(), preference.getAppsBlacklist());
         if (elapsedTime.isEmpty()) {
             throw new NoData();
         }
         return elapsedTime;
     }
 
-    private List<AppElapsedTimeDto> calculateAppsElapsedTime(UUID userId) {
-        var appUsage = repository.findConsecutiveAppUsageByUserId(userId);
-        System.out.println(appUsage);
+    private List<AppElapsedTimeDto> calculateAppsElapsedTime(UUID userId,
+                                                             Collection<String> appsWhitelist,
+                                                             Collection<String> appsBlacklist) {
+
+        var appUsage = repository.findConsecutiveAppUsageByUserId(userId, appsWhitelist, appsBlacklist);
         return appUsage.stream()
                 .map(this::calculateAppElapsedTime)
                 .collect(Collectors.groupingBy(AppElapsedTimeDto::appName))

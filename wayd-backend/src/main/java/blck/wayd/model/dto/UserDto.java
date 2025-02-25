@@ -20,4 +20,11 @@ public class UserDto {
     private final String username;
     private String password;
     private UUID token;
+    private UserPreferenceDto preference;
+
+    public UserDto(UUID id, String username, UserPreferenceDto preference) {
+        this.id = id;
+        this.username = username;
+        this.preference = preference;
+    }
 }

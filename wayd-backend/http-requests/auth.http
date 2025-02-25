@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8765/auth
+POST http://localhost:8765/api/auth
 Content-Type: application/json
 
 {

@@ -1,17 +1,17 @@
 ###
-POST http://localhost:8765/logs
-User-Token: 7328da82-24c2-41e0-8d7d-a920ce35a6f4
+POST http://localhost:8765/api/logs
+User-Token: 3ad5c444-c1ff-41ff-8c3d-e54be32570ca
 Content-Type: application/json
 
 {
   "logs": [
     {
       "appName": "test_app",
-      "timestamp": 1740245766
+      "timestamp": 1740245786
     }
   ]
 }
 
 ###
-GET http://localhost:8765/logs/stats
-User-Token: c26ab5f1-4911-4702-be8a-25e78d7620dd
+GET http://localhost:8765/api/logs/stats
+User-Token: 3ad5c444-c1ff-41ff-8c3d-e54be32570ca

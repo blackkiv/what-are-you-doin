@@ -24,7 +24,7 @@ const formatSeconds = (seconds: number) => {
   return formattedTime.trim()
 }
 
-const HomePage = () => {
+const DashboardPage = () => {
   const navigate = useNavigate()
 
   const $stats = useQuery({ queryKey: ['appStats'], queryFn: appStats })
@@ -65,4 +65,4 @@ const HomePage = () => {
   )
 }
 
-export default HomePage
+export default DashboardPage

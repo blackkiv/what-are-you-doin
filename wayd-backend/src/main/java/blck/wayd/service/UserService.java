@@ -8,6 +8,7 @@ import blck.wayd.model.dto.UserDto;
 import blck.wayd.util.PasswordUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
@@ -21,12 +22,14 @@ public class UserService {
 
     private final UserRepository repository;
 
+    @Transactional(readOnly = true)
     public UUID getUserTokenByCredentials(String username, String password) {
         return repository.findByUsernameAndPassword(username, PasswordUtil.hashPassword(password))
                 .orElseThrow(() -> new UserNotExists(username))
                 .getToken();
     }
 
+    @Transactional
     public UUID createUser(UserDto createUserDto, String rawPassword) {
         var username = createUserDto.getUsername();
         var userExists = repository.existsByUsername(username);
@@ -43,10 +46,17 @@ public class UserService {
         }
     }
 
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
     public UUID getUserIdByToken(UUID token) {
         return repository.findByToken(token)
                 .orElseThrow(() -> new UserNotExists(token))
-                .getToken();
+                .getId();
+    }
+
+    @Transactional(readOnly = true)
+    public UserDto getUserByToken(UUID token) {
+        return repository.findByToken(token)
+                .orElseThrow(() -> new UserNotExists(token))
+                .toDto();
     }
 }
