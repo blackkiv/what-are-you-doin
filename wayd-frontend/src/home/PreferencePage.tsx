@@ -1,5 +1,5 @@
-import { useMutation, useQuery } from '@tanstack/react-query'
-import { updateUserPreference, userData } from '../api/user'
+import { useMutation } from '@tanstack/react-query'
+import { updateUserPreference } from '../api/user'
 import {
   Button,
   Checkbox,
@@ -11,13 +11,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import {
   FormProvider,
   useFieldArray,
   useForm,
   useFormContext,
 } from 'react-hook-form'
+import { UserContext } from '../protected-routes/ProtectedRoute.tsx'
 
 const not = (a: AppName[], b: AppName[]) =>
   a.filter(value => !b.includes(value))
@@ -102,7 +103,7 @@ const AppPreference = () => {
   }
 
   const list = (items: AppName[]) => (
-    <Paper sx={{ width: 200, height: 230, overflow: 'auto' }}>
+    <Paper sx={{ width: '15vh', height: '40vh', overflow: 'auto' }}>
       <List dense component="div" role="list">
         {items.map(value => {
           const labelId = `transfer-list-item-${value}-label`
@@ -249,26 +250,22 @@ const PreferenceForm = ({
 }
 
 const PreferencePage = () => {
-  const $userData = useQuery({ queryKey: ['userData'], queryFn: userData })
-  const user = $userData.data
+  const { user, refreshUser } = useContext(UserContext)
 
   return (
-    !$userData.isLoading &&
-    user && (
-      <Stack spacing={10}>
-        <Typography variant="h2">Welcome, {user.username}</Typography>
-        <PreferenceForm
-          onRefresh={async () => await $userData.refetch()}
-          defaultData={{
-            apps: user?.preference.apps.map(app => ({ name: app })) ?? [],
-            appsWhitelist:
-              user?.preference.appsWhitelist.map(app => ({ name: app })) ?? [],
-            appsBlacklist:
-              user?.preference.appsBlacklist.map(app => ({ name: app })) ?? [],
-          }}
-        />
-      </Stack>
-    )
+    <Stack spacing={10}>
+      <Typography variant="h2">Welcome, {user.username}</Typography>
+      <PreferenceForm
+        onRefresh={refreshUser}
+        defaultData={{
+          apps: user?.preference.apps.map(app => ({ name: app })) ?? [],
+          appsWhitelist:
+            user?.preference.appsWhitelist.map(app => ({ name: app })) ?? [],
+          appsBlacklist:
+            user?.preference.appsBlacklist.map(app => ({ name: app })) ?? [],
+        }}
+      />
+    </Stack>
   )
 }
 
