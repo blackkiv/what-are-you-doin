@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import { updateUserPreference } from '../api/user'
+import { updateUserPreference } from '../../api'
 import {
   Button,
   Checkbox,
@@ -18,7 +18,7 @@ import {
   useForm,
   useFormContext,
 } from 'react-hook-form'
-import { UserContext } from '../protected-routes/ProtectedRoute.tsx'
+import { UserContext } from '../../util'
 
 const not = (a: AppName[], b: AppName[]) =>
   a.filter(value => !b.includes(value))
@@ -249,7 +249,7 @@ const PreferenceForm = ({
   )
 }
 
-const PreferencePage = () => {
+export const PreferencePage = () => {
   const { user, refreshUser } = useContext(UserContext)
 
   return (
@@ -268,5 +268,3 @@ const PreferencePage = () => {
     </Stack>
   )
 }
-
-export default PreferencePage

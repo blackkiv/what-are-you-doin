@@ -7,4 +7,8 @@ import java.sql.Date;
  * Day App Usage Dto.
  */
 public record DayAppUsageDto(String appName, Date usageDay, BigDecimal usageSeconds) {
+
+    public AppUsageBreakdownDto toDto() {
+        return new AppUsageBreakdownDto(appName, usageDay.toLocalDate(), usageSeconds);
+    }
 }

@@ -3,7 +3,7 @@ package blck.wayd.resource;
 import blck.wayd.model.request.TrackLogRequest;
 import blck.wayd.model.request.TrackLogsRequest;
 import blck.wayd.model.response.AppElapsedTimeResponse;
-import blck.wayd.model.response.AppUsageBreakdownWrapperResponse;
+import blck.wayd.model.response.AppUsageBreakdownResponse;
 import blck.wayd.service.TrackLogService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,7 +48,10 @@ public class TrackLogResource {
     }
 
     @GetMapping("/stats/usage-breakdown")
-    public AppUsageBreakdownWrapperResponse getAppUsageBreakdown(@RequestHeader("User-Token") UUID token) {
-        return AppUsageBreakdownWrapperResponse.fromDto(trackLogService.getAppUsageBreakdown(token));
+    public List<AppUsageBreakdownResponse> getAppUsageBreakdown(@RequestHeader("User-Token") UUID token) {
+        return trackLogService.getAppUsageBreakdown(token)
+                .stream()
+                .map(AppUsageBreakdownResponse::fromDto)
+                .toList();
     }
 }

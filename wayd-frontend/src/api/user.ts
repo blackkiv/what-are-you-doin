@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { backendUrl } from './backendUtil.ts'
+import { backendUrl } from './backendUtil'
 
 export type UserDataResponse = {
   username: string

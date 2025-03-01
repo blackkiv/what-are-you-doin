@@ -57,38 +57,19 @@ public interface TrackLogRepository extends JpaRepository<TrackLog, UUID> {
                                  where user_id = :userId
                                    and timestamp >= extract(epoch from (current_date - interval '14 days'))
                                    and (coalesce(:appsWhitelist) is null or app_name in (:appsWhitelist))
-                                   and (coalesce(:appsBlacklist) is null or app_name not in (:appsBlacklist))),
-                 all_days as (select generate_series(
-                                                     current_date - interval '13 days', current_date, interval '1 day'
-                                     )::date as usage_day),
-                 all_apps as (select distinct app_name
-                              from ranked_data),
-                 usage_data as (select ad.usage_day,
-                                       aa.app_name,
-                                       coalesce(sum(ud.max_ts - ud.min_ts), null) as total_usage_seconds
-                                from all_days ad
-                                         cross join all_apps aa
-                                         left join (select app_name,
-                                                           usage_day,
-                                                           group_id,
-                                                           min(timestamp) as min_ts,
-                                                           max(timestamp) as max_ts
-                                                    from ranked_data
-                                                    group by app_name, usage_day, group_id
-                                                    having min(timestamp) <> max(timestamp)) as ud
-                                                   on ad.usage_day = ud.usage_day and aa.app_name = ud.app_name
-                                group by ad.usage_day, aa.app_name),
-                 apps_with_usage as (select distinct app_name
-                                     from usage_data
-                                     where total_usage_seconds is not null)
-            select app_name            as app_name,
-                   usage_day           as usage_day,
-                   total_usage_seconds as usage_seconds
-            from usage_data
-            where usage_day in (select distinct usage_day
-                                from usage_data
-                                where total_usage_seconds is not null)
-              and app_name in (select app_name from apps_with_usage)
+                                   and (coalesce(:appsBlacklist) is null or app_name not in (:appsBlacklist)))
+            select app_name             as app_name,
+                   usage_day            as usage_day,
+                   sum(max_ts - min_ts) as usage_seconds
+            from (select app_name,
+                         usage_day,
+                         group_id,
+                         min(timestamp) as min_ts,
+                         max(timestamp) as max_ts
+                  from ranked_data
+                  group by app_name, usage_day, group_id
+                  having min(timestamp) <> max(timestamp)) as session_data
+            group by app_name, usage_day
             order by usage_day, app_name;
             """, nativeQuery = true)
     List<DayAppUsageDto> findAppUsageBreakdownByUserId(

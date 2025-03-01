@@ -1,10 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import './App.css'
-import ProtectedRoute from './protected-routes/ProtectedRoute'
-import LoginPage from './auth/LoginPage'
-import DashboardPage from './home/DashboardPage.tsx'
-import RegisterPage from './auth/RegisterPage.tsx'
-import PreferencePage from './home/PreferencePage.tsx'
+import { DashboardPage, LoginPage, PreferencePage, RegisterPage } from './ui'
+import { ProtectedRoute } from './util'
 
 function App() {
   return (

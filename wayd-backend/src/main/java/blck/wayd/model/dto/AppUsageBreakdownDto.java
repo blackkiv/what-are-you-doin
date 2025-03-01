@@ -1,10 +1,10 @@
 package blck.wayd.model.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.time.LocalDate;
 
 /**
  * App Usage Breakdown Dto.
  */
-public record AppUsageBreakdownDto(String appName, List<BigDecimal> usageBreakdown) {
+public record AppUsageBreakdownDto(String appName, LocalDate usageDate, BigDecimal usageSeconds) {
 }

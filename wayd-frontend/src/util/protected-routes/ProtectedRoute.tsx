@@ -1,9 +1,9 @@
 import { Navigate, useNavigate } from 'react-router-dom'
 import { createContext, ReactNode, Suspense, useEffect } from 'react'
-import FloatingMenu from '../home/FloatingMenu.tsx'
 import { useQuery } from '@tanstack/react-query'
-import { userData, UserDataResponse } from '../api/user.ts'
+import { userData, UserDataResponse } from '../../api'
 import { AxiosError } from 'axios'
+import { FloatingMenu } from '../../ui'
 
 export const UserContext = createContext({
   user: {} as UserDataResponse,
@@ -14,7 +14,7 @@ const isAuthenticated = () => {
   return !!localStorage.getItem('Wayd-Token')
 }
 
-const ProtectedRoute = ({ children }: { children: ReactNode }) => {
+export const ProtectedRoute = ({ children }: { children: ReactNode }) => {
   const navigate = useNavigate()
   const $userData = useQuery({ queryKey: ['userData'], queryFn: userData })
 
@@ -50,5 +50,3 @@ const ProtectedRoute = ({ children }: { children: ReactNode }) => {
     <Navigate to="/login" replace />
   )
 }
-
-export default ProtectedRoute

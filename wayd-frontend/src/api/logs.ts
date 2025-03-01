@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { backendUrl } from './backendUtil.ts'
+import { backendUrl } from './backendUtil'
 
 export type AppStatsResponse = {
   appName: string
@@ -18,16 +18,14 @@ export const appStats = async () => {
   return response.data
 }
 
-export type AppsUsageBreakdown = {
-  appsUsageBreakdown: {
-    appName: string
-    usageBreakdown: number[]
-  }[]
-  xAxis: Date[]
-}
+export type AppsUsageBreakdownResponse = {
+  appName: string
+  usageDate: Date
+  usageSeconds: number
+}[]
 
 export const appsUsageBreakdown = async () => {
-  const response = await axios.get<AppsUsageBreakdown>(
+  const response = await axios.get<AppsUsageBreakdownResponse>(
     `${backendUrl()}/logs/stats/usage-breakdown`,
     {
       headers: {

@@ -1,10 +1,10 @@
+import { Button, Stack, TextField } from '@mui/material'
+import { useMutation } from '@tanstack/react-query'
 import { Controller, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { register } from '../api/auth'
-import { Button, Stack, TextField } from '@mui/material'
+import { login } from '../../api'
 
-const RegisterPage = () => {
+export const LoginPage = () => {
   const navigate = useNavigate()
 
   const {
@@ -16,8 +16,8 @@ const RegisterPage = () => {
     password: string
   }>()
 
-  const $register = useMutation({
-    mutationFn: register,
+  const $login = useMutation({
+    mutationFn: login,
     onSuccess: data => {
       localStorage.setItem('Wayd-Token', data)
       navigate('/dashboard')
@@ -30,10 +30,7 @@ const RegisterPage = () => {
   return (
     <form
       onSubmit={handleSubmit(data => {
-        $register.mutate({
-          username: data.username,
-          rawPassword: data.password,
-        })
+        $login.mutate({ username: data.username, rawPassword: data.password })
       })}
     >
       <Stack spacing={1}>
@@ -68,10 +65,9 @@ const RegisterPage = () => {
             />
           )}
         />
-        <Button type="submit">Register (at least try)</Button>
+        <Button type="submit">Login (at least try)</Button>
+        <Button onClick={() => navigate('/register')}>register me :c</Button>
       </Stack>
     </form>
   )
 }
-
-export default RegisterPage

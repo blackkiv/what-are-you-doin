@@ -5,7 +5,6 @@ import blck.wayd.data.entity.TrackLog;
 import blck.wayd.exceptions.NoData;
 import blck.wayd.model.dto.AppElapsedTimeDto;
 import blck.wayd.model.dto.AppUsageBreakdownDto;
-import blck.wayd.model.dto.AppUsageBreakdownWrapperDto;
 import blck.wayd.model.dto.ConsecutiveAppUsageDto;
 import blck.wayd.model.dto.DayAppUsageDto;
 import blck.wayd.model.dto.TrackLogDto;
@@ -13,15 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
 
 /**
  * Track Log Service.
@@ -55,11 +49,11 @@ public class TrackLogService {
     }
 
     @Transactional(readOnly = true)
-    public AppUsageBreakdownWrapperDto getAppUsageBreakdown(UUID token) {
+    public List<AppUsageBreakdownDto> getAppUsageBreakdown(UUID token) {
         var user = userService.getUserByToken(token);
         var preference = user.getPreference();
         var usageBreakdown = calculateAppsUsageBreakdown(user.getId(), preference.getAppsWhitelist(), preference.getAppsBlacklist());
-        if (usageBreakdown.appUsageBreakdown().isEmpty()) {
+        if (usageBreakdown.isEmpty()) {
             throw new NoData();
         }
         return usageBreakdown;
@@ -90,34 +84,13 @@ public class TrackLogService {
         );
     }
 
-    private AppUsageBreakdownWrapperDto calculateAppsUsageBreakdown(UUID userId,
-                                                                    Collection<String> appsWhitelist,
-                                                                    Collection<String> appsBlacklist) {
+    private List<AppUsageBreakdownDto> calculateAppsUsageBreakdown(UUID userId,
+                                                                   Collection<String> appsWhitelist,
+                                                                   Collection<String> appsBlacklist) {
 
         var appsUsage = repository.findAppUsageBreakdownByUserId(userId, appsWhitelist, appsBlacklist);
-
-        var appsUsageBreakdown = appsUsage.stream()
-                .collect(Collectors.groupingBy(DayAppUsageDto::appName))
-                .entrySet()
-                .stream()
-                .map(appUsage -> {
-                    var usageBreakdown = appUsage.getValue()
-                            .stream()
-                            .sorted(Comparator.comparing(DayAppUsageDto::usageDay))
-                            .map(DayAppUsageDto::usageSeconds)
-                            .map(usage -> isNull(usage) ? BigDecimal.ZERO : usage)
-                            .toList();
-                    return new AppUsageBreakdownDto(appUsage.getKey(), usageBreakdown);
-                })
+        return appsUsage.stream()
+                .map(DayAppUsageDto::toDto)
                 .toList();
-
-        var xAxis = appsUsage.stream()
-                .map(DayAppUsageDto::usageDay)
-                .map(Date::toLocalDate)
-                .sorted()
-                .distinct()
-                .toList();
-
-        return new AppUsageBreakdownWrapperDto(appsUsageBreakdown, xAxis);
     }
 }

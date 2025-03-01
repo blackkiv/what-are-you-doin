@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Dashboard, Logout, Settings } from '@mui/icons-material'
 import { useNavigate } from 'react-router-dom'
 
-const FloatingMenu = () => {
+export const FloatingMenu = () => {
   const navigate = useNavigate()
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
@@ -83,5 +83,3 @@ const FloatingMenu = () => {
     </Box>
   )
 }
-
-export default FloatingMenu
